@@ -9,7 +9,8 @@ import _ from 'underscore';
 import Cocktail from 'cocktail';
 import FlowEventsMixin from './../../mixins/flow-events-mixin';
 import FormView from '../../form';
-import ServiceMixin from '../..//mixins/service-mixin';
+import ResendMixin from '../../mixins/resend-mixin';
+import ServiceMixin from '../../mixins/service-mixin';
 import Template from 'templates/post_verify/secondary_email/confirm_secondary_email.mustache';
 
 const CODE_INPUT_SELECTOR = 'input.otp-code';
@@ -39,6 +40,12 @@ class ConfirmSecondaryEmail extends FormView {
     });
   }
 
+  resend() {
+    const account = this.getSignedInAccount();
+    const email = this.model.get('secondaryEmail');
+    return account.recoveryEmailSecondaryResendCode(email);
+  }
+
   submit() {
     const account = this.getSignedInAccount();
     const code = this.getElementValue(CODE_INPUT_SELECTOR);
@@ -58,6 +65,11 @@ class ConfirmSecondaryEmail extends FormView {
   }
 }
 
-Cocktail.mixin(ConfirmSecondaryEmail, FlowEventsMixin, ServiceMixin);
+Cocktail.mixin(
+  ConfirmSecondaryEmail,
+  FlowEventsMixin,
+  ResendMixin(),
+  ServiceMixin
+);
 
 export default ConfirmSecondaryEmail;
